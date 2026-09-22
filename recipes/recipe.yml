@@ -1,45 +1,89 @@
----
-# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-# image will be published to ghcr.io/<user>/<name>
-name: template
-# description will be included in the image's metadata
-description: This is my personal OS image.
+# Niri + DankMaterialShell on a Bluefin DX base.
+# recipes/recipe.yml in your fork of blue-build/template
+# Module reference: https://blue-build.org/reference/modules/
 
-# the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
-image-version: latest # You can pin to a specific version of Fedora as well
+name: niridms
+description: Bluefin DX base with niri + DankMaterialShell
+base-image: ghcr.io/ublue-os/bluefin-dx   # DX = container/dev tooling included
+image-version: stable
 
-# module configuration, executed in order
-# you can include multiple instances of the same module
 modules:
-  - type: files
-    files:
-      - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
+  # Kernel modules, built against the matching ublue kernel.
+  # This is why OBS virtual camera can't be solved with Flatpak alone.
+  - type: akmods
+    base: main
+    install:
+      - v4l2loopback
 
   - type: dnf
     repos:
       copr:
-        - atim/starship
+        - avengemedia/dms
     install:
       packages:
-        - micro
-        - starship
-    remove:
-      packages:
-        # example: removing firefox (in favor of the flatpak)
-        # "firefox" is the main package, "firefox-langpacks" is a dependency
-        - firefox
-        - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
+        # --- session ---
+        - niri
+        - dms                        # pulls quickshell, matugen, cava, cliphist,
+                                     # wl-clipboard, dgop, qt6ct, Inter +
+                                     # Fira Code + Material Symbols
+        - xwayland-satellite         # X11 apps under niri
+        - xdg-desktop-portal-gtk     # file pickers, GTK integration
+        - xdg-desktop-portal-gnome   # screen sharing / screenshots
 
+        # --- terminal ---
+        - ghostty
+
+        # --- fonts DMS deps don't cover ---
+        - google-noto-emoji-color-fonts
+        - google-noto-sans-cjk-fonts
+        - google-noto-serif-fonts
+        - jetbrains-mono-nerd-fonts
+
+        # --- GUI utilities that don't depend on GNOME Shell ---
+        - nm-connection-editor       # VPNs, static IPs, enterprise wifi
+        - system-config-printer
+        - gnome-disk-utility
+        - pwvucontrol                # per-app audio routing
+        - qt5ct                      # theming for older Qt5 apps
+
+        # --- session utilities ---
+        - brightnessctl
+        - playerctl
+
+        # --- virtualization (KVM/libvirt) ---
+        - libvirt
+        - qemu-kvm
+        - virt-manager
+        - virt-viewer
+        - virt-install
+        - edk2-ovmf                  # UEFI firmware -> Win11 Secure Boot
+        - swtpm                      # virtual TPM 2.0 -> Win11 TPM check
+        - libvirt-daemon-config-network
+
+  # Ships files/system/** into the image. Needed for the v4l2loopback config.
+  - type: files
+    files:
+      - source: system
+        destination: /
+
+  - type: systemd
+    system:
+      enabled:
+        - libvirtd.socket
+
+  # Apps live in Flatpak, not the image.
   - type: default-flatpaks
-    configurations:
-      - notify: true # Send notification after install/uninstall is finished (true/false)
-        scope: system
-        # If no repo information is specified, Flathub will be used by default
-        install: # system flatpaks we want all users to have and not remove
-          - org.mozilla.firefox
-          - org.gnome.Loupe
-      - scope: user # Also add Flathub user repo, but no user packages
+    notify: true
+    system:
+      install:
+        - org.mozilla.firefox
+        - com.obsproject.Studio
+        - org.keepassxc.KeePassXC
+        - org.localsend.localsend_app
+        - com.moonlight_stream.Moonlight
+        - dev.zed.Zed
+        - org.gnome.SimpleScan
+        - org.fedoraproject.MediaWriter
+        - com.github.tchx84.Flatseal
 
-  - type: signing # this sets up the proper policy & signing files for signed images to work fully
+  - type: signing
