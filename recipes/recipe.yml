@@ -21,23 +21,15 @@ modules:
                                      # wl-clipboard, dgop, qt6ct, Inter +
                                      # Fira Code + Material Symbols
         - xwayland-satellite         # X11 apps under niri
-        - xdg-desktop-portal-gtk     # file pickers, GTK integration
-        - xdg-desktop-portal-gnome   # screen sharing / screenshots
 
         # --- terminal ---
         - ghostty
 
         # --- fonts DMS deps don't cover ---
-        - google-noto-emoji-color-fonts
-        - google-noto-sans-cjk-fonts
         - google-noto-serif-fonts
-        - jetbrains-mono-nerd-fonts
 
         # --- GUI utilities that don't depend on GNOME Shell ---
-        - nm-connection-editor       # VPNs, static IPs, enterprise wifi
         - system-config-printer
-        - gnome-disk-utility
-        - pwvucontrol                # per-app audio routing
         - qt5ct                      # theming for older Qt5 apps
 
         # --- session utilities ---
@@ -45,14 +37,6 @@ modules:
         - playerctl
 
         # --- virtualization (KVM/libvirt) ---
-        - libvirt
-        - qemu-kvm
-        - virt-manager
-        - virt-viewer
-        - virt-install
-        - edk2-ovmf                  # UEFI firmware -> Win11 Secure Boot
-        - swtpm                      # virtual TPM 2.0 -> Win11 TPM check
-        - libvirt-daemon-config-network
 
   # Ships files/system/** into the image. Needed for the v4l2loopback config.
   - type: files
@@ -79,5 +63,6 @@ modules:
         - org.gnome.SimpleScan
         - org.fedoraproject.MediaWriter
         - com.github.tchx84.Flatseal
+        - com.saivert.pwvucontrol
 
   - type: signing
