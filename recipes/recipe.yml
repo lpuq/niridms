@@ -51,18 +51,19 @@ modules:
 
   # Apps live in Flatpak, not the image.
   - type: default-flatpaks
-    notify: true
-    system:
-      install:
-        - org.mozilla.firefox
-        - com.obsproject.Studio
-        - org.keepassxc.KeePassXC
-        - org.localsend.localsend_app
-        - com.moonlight_stream.Moonlight
-        - dev.zed.Zed
-        - org.gnome.SimpleScan
-        - org.fedoraproject.MediaWriter
-        - com.github.tchx84.Flatseal
-        - com.saivert.pwvucontrol
+    configurations:
+      - scope: system
+        notify: true
+        install:
+          - org.mozilla.firefox
+          - com.obsproject.Studio
+          - org.keepassxc.KeePassXC
+          - org.localsend.localsend_app
+          - com.moonlight_stream.Moonlight
+          - dev.zed.Zed
+          - org.gnome.SimpleScan
+          - org.fedoraproject.MediaWriter
+          - com.github.tchx84.Flatseal
+          - com.saivert.pwvucontrol
 
   - type: signing
