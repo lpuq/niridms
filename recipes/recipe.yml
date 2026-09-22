@@ -8,12 +8,6 @@ base-image: ghcr.io/ublue-os/bluefin-dx   # DX = container/dev tooling included
 image-version: stable
 
 modules:
-  # Kernel modules, built against the matching ublue kernel.
-  # This is why OBS virtual camera can't be solved with Flatpak alone.
-  - type: akmods
-    base: main
-    install:
-      - v4l2loopback
 
   - type: dnf
     repos:
