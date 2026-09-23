@@ -13,6 +13,7 @@ modules:
     repos:
       copr:
         - avengemedia/dms
+        - avengemedia/danklinux
     install:
       packages:
         # --- session ---
@@ -37,6 +38,15 @@ modules:
         - playerctl
 
         # --- virtualization (KVM/libvirt) ---
+
+  # quickshell links private Qt ABI; use the DankLinux rebuild, not Fedora's.
+  - type: dnf
+    replace:
+      - from-repo: copr:copr.fedorainfracloud.org:avengemedia:danklinux
+        allow-erasing: true
+        packages:
+          - old: quickshell
+            new: quickshell-git
 
   # Ships files/system/** into the image. Needed for the v4l2loopback config.
   - type: files
